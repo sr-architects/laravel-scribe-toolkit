@@ -47,6 +47,8 @@ jobs:
         run: |
           composer require \
             "laravel/framework:${{ matrix.laravel }}" \
+            --no-update --no-interaction
+          composer require --dev \
             "orchestra/testbench:${{ matrix.testbench }}" \
             "larastan/larastan:${{ matrix.larastan }}" \
             --no-update --no-interaction
