@@ -16,6 +16,7 @@
         "symfony/yaml": "^7.0|^8.0"
     },
     "require-dev": {
+        "captainhook/captainhook": "^5.29",
         "larastan/larastan": "^2.9|^3.0",
         "orchestra/testbench": "^9.0|^10.0",
         "phpunit/phpunit": "^11.0"
@@ -38,7 +39,10 @@
         "ci": [
             "@analyse",
             "@test"
-        ]
+        ],
+        "hooks:install": "captainhook install --force",
+        "post-install-cmd": "@hooks:install",
+        "post-update-cmd": "@hooks:install"
     },
     "extra": {
         "laravel": {
