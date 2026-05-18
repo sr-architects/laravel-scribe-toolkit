@@ -137,6 +137,55 @@ $this->minimalSpec(string $description = ''): array  // spec skeleton ขั้�
 
 ---
 
+## CHANGELOG Protocol
+
+ทุก PR ที่มีการเปลี่ยนแปลง **ต้องอัปเดต `CHANGELOG.md` ก่อน merge เสมอ** — ไม่มีข้อยกเว้น
+
+### Format (Keep a Changelog)
+
+เพิ่มรายการใต้ `## [Unreleased]` เสมอ ห้ามเขียนลงใน version ที่ release แล้ว
+
+```markdown
+## [Unreleased]
+
+### Added
+- สิ่งที่เพิ่มเข้ามาใหม่ทั้งหมด (feature, command, strategy)
+
+### Changed
+- พฤติกรรมที่เปลี่ยนแต่ยัง backward-compatible
+
+### Fixed
+- Bug ที่แก้ พร้อมระบุสาเหตุสั้น ๆ ไม่ใช่แค่อาการ
+
+### Removed
+- สิ่งที่ลบออกจาก public API
+
+### Deprecated
+- สิ่งที่จะถูกลบใน version ถัดไป
+
+### Security
+- ช่องโหว่ที่แก้ไข — ระบุ CVE ถ้ามี
+```
+
+### ประเภทการเปลี่ยนแปลงที่ต้องบันทึก
+
+| ต้องบันทึก | ไม่ต้องบันทึก |
+|---|---|
+| Command ใหม่ / ลบ / เปลี่ยน signature | Refactor ภายในที่ behavior ไม่เปลี่ยน |
+| Strategy ใหม่ / เปลี่ยน behavior | แก้ typo ใน comment |
+| Config key เพิ่ม / เปลี่ยน / ลบ | อัปเดต dev dependency |
+| Bug fix ที่กระทบ output | เพิ่ม test เฉย ๆ |
+| Breaking change (ต้องระบุ **[BREAKING]**) | Format / style ใน code |
+
+### เมื่อ Release
+
+1. เปลี่ยน `## [Unreleased]` → `## [x.y.z] — YYYY-MM-DD`
+2. เพิ่ม `## [Unreleased]` ว่าง ๆ ไว้บนสุดอีกครั้ง
+3. อัปเดต link ท้ายไฟล์ให้ตรงกับ tag ใหม่
+4. Tag git: `git tag -a vx.y.z -m "Release x.y.z"`
+
+---
+
 ## Commit Rules
 
 - ห้ามใส่ `Co-Authored-By: Claude` หรือ AI attribution ใด ๆ ในทุก commit
