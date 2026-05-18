@@ -29,6 +29,7 @@ jobs:
             laravel: '12.*'
             testbench: '10.*'
             larastan: '3.*'
+            upload_coverage: true
 
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
@@ -40,7 +41,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: mbstring, bcmath
-          coverage: pcov
+          coverage: ${{ matrix.upload_coverage && 'pcov' || 'none' }}
 
       - name: Install dependencies
         run: |
@@ -49,15 +50,21 @@ jobs:
             "orchestra/testbench:${{ matrix.testbench }}" \
             "larastan/larastan:${{ matrix.larastan }}" \
             --no-update --no-interaction
-          composer install --prefer-dist --no-progress --no-interaction
+          composer install --prefer-dist --no-progress --no-interaction --no-scripts
 
       - name: Static analysis (PHPStan level 8)
         run: composer analyse
 
+      - name: Run tests
+        if: ${{ !matrix.upload_coverage }}
+        run: composer test
+
       - name: Run tests with coverage
+        if: ${{ matrix.upload_coverage }}
         run: composer test:ci
 
       - name: Upload coverage to Codecov
+        if: ${{ matrix.upload_coverage }}
         uses: codecov/codecov-action@v4
         with:
           file: coverage/clover.xml
