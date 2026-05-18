@@ -163,11 +163,33 @@ Add entries under `## [Unreleased]`. Never edit a released version block.
 
 **Skip:** internal refactors with no behavior change, typo fixes in comments, dev-dependency bumps, adding tests only.
 
-**On release:**
+**On release:** bump the version using SemVer rules below, then:
 1. Rename `## [Unreleased]` → `## [x.y.z] — YYYY-MM-DD`
 2. Add a fresh empty `## [Unreleased]` at the top
 3. Update the comparison links at the bottom of the file
 4. Tag: `git tag -a vx.y.z -m "Release x.y.z"`
+
+---
+
+## Versioning (SemVer)
+
+Version format: `MAJOR.MINOR.PATCH` — e.g. `1.2.3`
+
+| Segment | Bump when | Example |
+|---|---|---|
+| `PATCH` | Bug fix only. No new features. Consumers' code keeps working without any changes. | `1.0.0 → 1.0.1` |
+| `MINOR` | New feature, new command, or new strategy added. Fully backward-compatible — consumers can upgrade without touching their code. | `1.0.0 → 1.1.0` |
+| `MAJOR` | Breaking change. Consumers **must** update their code after upgrading. | `1.0.0 → 2.0.0` |
+
+**What counts as a breaking change (MAJOR)?**
+
+- Renaming or removing a public Artisan command signature
+- Removing a strategy class or changing its `__invoke()` return contract
+- Removing or renaming a config key in `config/openapi.php`
+- Dropping support for a PHP or Laravel version (e.g. Laravel 11 → require 12+)
+- Changing a method signature in any class that consumers are expected to extend (e.g. `OpenApiGenerator` subclasses)
+
+**Decision rule:** if a consumer's app would throw an error or produce wrong output after a `composer update` without any changes on their side → it's MAJOR.
 
 ---
 
