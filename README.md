@@ -1,5 +1,20 @@
 # laravel-scribe-toolkit
 
+<!-- Code Health & Automation -->
+[![CI](https://github.com/sr-architects/laravel-scribe-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/sr-architects/laravel-scribe-toolkit/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/sr-architects/laravel-scribe-toolkit/graph/badge.svg)](https://codecov.io/gh/sr-architects/laravel-scribe-toolkit)
+
+<!-- Distribution & Compatibility -->
+[![Latest Release](https://img.shields.io/github/v/release/sr-architects/laravel-scribe-toolkit?label=release&color=blue)](https://github.com/sr-architects/laravel-scribe-toolkit/releases)
+[![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-8892BF?logo=php&logoColor=white)](https://www.php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-11%20|%2012-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+
+<!-- Code Quality & Legal -->
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen)](https://phpstan.org)
+[![License](https://img.shields.io/github/license/sr-architects/laravel-scribe-toolkit)](https://github.com/sr-architects/laravel-scribe-toolkit/blob/main/LICENSE)
+
+---
+
 A Laravel package that supercharges [Scribe](https://scribe.knuckles.wtf/) with a production-ready 7-step OpenAPI publishing pipeline — complete with lifecycle status badges, multi-environment switching, JWT tools widget, and Scalar stability markers.
 
 Install once. Run one command. Ship beautiful, interactive API docs.

@@ -33,6 +33,7 @@
     "scripts": {
         "test": "phpunit --no-coverage",
         "test:coverage": "phpunit --coverage-text --coverage-html=coverage/html",
+        "test:ci": "phpunit --coverage-clover=coverage/clover.xml",
         "analyse": "phpstan analyse --memory-limit=512M",
         "ci": [
             "@analyse",

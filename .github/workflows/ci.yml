@@ -40,7 +40,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: mbstring, bcmath
-          coverage: xdebug
+          coverage: pcov
 
       - name: Install dependencies
         run: |
@@ -55,7 +55,7 @@ jobs:
         run: composer analyse
 
       - name: Run tests with coverage
-        run: composer test -- --coverage-clover coverage/clover.xml
+        run: composer test:ci
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
