@@ -43,7 +43,7 @@ jobs:
           extensions: mbstring, bcmath
           coverage: ${{ matrix.upload_coverage && 'pcov' || 'none' }}
 
-      - name: Install dependencies
+      - name: Pin matrix versions
         run: |
           composer require \
             "laravel/framework:${{ matrix.laravel }}" \
@@ -52,7 +52,9 @@ jobs:
             "orchestra/testbench:${{ matrix.testbench }}" \
             "larastan/larastan:${{ matrix.larastan }}" \
             --no-update --no-interaction
-          composer install --prefer-dist --no-progress --no-interaction --no-scripts
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-progress --no-interaction --no-scripts
 
       - name: Static analysis (PHPStan level 8)
         run: composer analyse
