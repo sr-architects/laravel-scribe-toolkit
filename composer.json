@@ -32,7 +32,7 @@
     },
     "scripts": {
         "test": "phpunit --no-coverage",
-        "test:coverage": "phpunit --coverage-text",
+        "test:coverage": "phpunit --coverage-text --coverage-html=coverage/html",
         "analyse": "phpstan analyse --memory-limit=512M",
         "ci": [
             "@analyse",
