@@ -15,8 +15,10 @@ class ScribeInjectReport extends Command
 
     public function handle(): int
     {
-        $reportPath = base_path($this->option('report'));
-        $yamlPath = base_path($this->option('yaml'));
+        $reportOption = $this->option('report');
+        $yamlOption   = $this->option('yaml');
+        $reportPath   = base_path(is_string($reportOption) ? $reportOption : 'api_validation_report.md');
+        $yamlPath     = base_path(is_string($yamlOption) ? $yamlOption : 'storage/app/scribe/openapi.yaml');
 
         if (! file_exists($yamlPath)) {
             $this->error("OpenAPI YAML not found at: {$yamlPath}");
@@ -51,12 +53,12 @@ class ScribeInjectReport extends Command
                 '/\s*---\s*\n*' . preg_quote($beginMarker, '/') . '.*?' . preg_quote($endMarker, '/') . '/s',
                 '',
                 $existingDescription
-            );
+            ) ?? $existingDescription;
             $existingDescription = preg_replace(
                 '/' . preg_quote($beginMarker, '/') . '.*?' . preg_quote($endMarker, '/') . '/s',
                 '',
                 $existingDescription
-            );
+            ) ?? $existingDescription;
             $existingDescription = trim($existingDescription);
         }
 

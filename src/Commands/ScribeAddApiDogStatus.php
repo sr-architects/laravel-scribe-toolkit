@@ -127,7 +127,7 @@ class ScribeAddApiDogStatus extends Command
 
     private function normalizePath(string $path): string
     {
-        return preg_replace('/\{[^}]+\}/', '{param}', $path);
+        return preg_replace('/\{[^}]+\}/', '{param}', $path) ?? $path;
     }
 
     private function stripRoutePrefix(string $uri): string
@@ -143,11 +143,12 @@ class ScribeAddApiDogStatus extends Command
         return $uri;
     }
 
+    /** @return array<string, string> */
     private function buildDescriptionMap(): array
     {
         $map = [];
 
-        foreach (Route::getRoutes() as $route) {
+        foreach (Route::getRoutes()->getRoutes() as $route) {
             $action = $route->getAction();
 
             if (! isset($action['controller'])) {
@@ -191,11 +192,12 @@ class ScribeAddApiDogStatus extends Command
         return $map;
     }
 
+    /** @return array<string, string> */
     private function buildStatusMap(): array
     {
         $map = [];
 
-        foreach (Route::getRoutes() as $route) {
+        foreach (Route::getRoutes()->getRoutes() as $route) {
             $action = $route->getAction();
 
             if (! isset($action['controller'])) {

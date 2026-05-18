@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            laravel: '11.*'
+            testbench: '9.*'
+            larastan: '2.*'
+          - php: '8.3'
+            laravel: '11.*'
+            testbench: '9.*'
+            larastan: '2.*'
+          - php: '8.3'
+            laravel: '12.*'
+            testbench: '10.*'
+            larastan: '3.*'
+          - php: '8.4'
+            laravel: '12.*'
+            testbench: '10.*'
+            larastan: '3.*'
+
+    name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, bcmath
+          coverage: xdebug
+
+      - name: Install dependencies
+        run: |
+          composer require \
+            "laravel/framework:${{ matrix.laravel }}" \
+            "orchestra/testbench:${{ matrix.testbench }}" \
+            "larastan/larastan:${{ matrix.larastan }}" \
+            --no-update --no-interaction
+          composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Static analysis (PHPStan level 8)
+        run: composer analyse
+
+      - name: Run tests with coverage
+        run: composer test -- --coverage-clover coverage/clover.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage/clover.xml
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -7,6 +7,10 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 
 class StripApiPrefix extends Strategy
 {
+    /**
+     * @param  array<mixed>  $settings
+     * @return array<string, mixed>|null
+     */
     public function __invoke(ExtractedEndpointData $endpointData, array $settings = []): ?array
     {
         // Keep /api prefix on local — no ingress stripping in local dev

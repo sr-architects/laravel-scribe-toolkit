@@ -13,6 +13,11 @@ class OpenApiGenerate extends Command
     public function handle(): int
     {
         $this->info('Running scribe:generate...');
-        return Artisan::call('scribe:generate', [], $this->output);
+        return $this->runStep('scribe:generate');
+    }
+
+    protected function runStep(string $command): int
+    {
+        return Artisan::call($command, [], $this->output);
     }
 }

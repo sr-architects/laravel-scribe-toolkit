@@ -61,6 +61,11 @@ class OpenApiInjectJwtTools extends Command
             }
         }
 
-        return Artisan::call('scribe:inject-jwt', [], $this->output);
+        return $this->runStep('scribe:inject-jwt');
+    }
+
+    protected function runStep(string $command): int
+    {
+        return Artisan::call($command, [], $this->output);
     }
 }

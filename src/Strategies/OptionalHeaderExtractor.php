@@ -14,6 +14,10 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
  */
 class OptionalHeaderExtractor extends Strategy
 {
+    /**
+     * @param  array<mixed>  $routeRules
+     * @return array<string, mixed>|null
+     */
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return self::parseOptionalHeaders($endpointData);
@@ -24,7 +28,11 @@ class OptionalHeaderExtractor extends Strategy
      */
     public static function parseOptionalHeaders(ExtractedEndpointData $endpointData): ?array
     {
-        $docBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
+        $route = $endpointData->route;
+        if ($route === null) {
+            return null;
+        }
+        $docBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
 
         $headers = [];
         foreach ($docBlock->getTags() as $tag) {

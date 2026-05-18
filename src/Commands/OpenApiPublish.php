@@ -24,7 +24,7 @@ class OpenApiPublish extends Command
 
         foreach ($steps as [$command, $message]) {
             $this->info($message);
-            $exitCode = Artisan::call($command, [], $this->output);
+            $exitCode = $this->runStep($command);
             if ($exitCode !== 0) {
                 return $exitCode;
             }
@@ -34,5 +34,10 @@ class OpenApiPublish extends Command
         $this->line('✅  Docs: <href=/api/docs>/api/docs</>');
 
         return self::SUCCESS;
+    }
+
+    protected function runStep(string $command): int
+    {
+        return Artisan::call($command, [], $this->output);
     }
 }

@@ -12,6 +12,11 @@ class OpenApiAddScalarStability extends Command
 
     public function handle(): int
     {
-        return Artisan::call('scribe:add-scalar-stability', [], $this->output);
+        return $this->runStep('scribe:add-scalar-stability');
+    }
+
+    protected function runStep(string $command): int
+    {
+        return Artisan::call($command, [], $this->output);
     }
 }

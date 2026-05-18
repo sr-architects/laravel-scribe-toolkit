@@ -19,6 +19,10 @@ use Knuckles\Scribe\Writing\OpenApiSpecGenerators\OpenApiGenerator;
  */
 class PerEndpointSecurityGenerator extends OpenApiGenerator
 {
+    /**
+     * @param  array<string, mixed>  $root
+     * @return array<string, mixed>
+     */
     public function root(array $root, array $groupedEndpoints): array
     {
         unset($root['security']);
@@ -26,31 +30,63 @@ class PerEndpointSecurityGenerator extends OpenApiGenerator
         return $root;
     }
 
+    /**
+     * @param  array<string, mixed>  $pathItem
+     * @return array<string, mixed>
+     */
     public function pathItem(array $pathItem, array $groupedEndpoints, OutputEndpointData $endpoint): array
     {
-        $apiKey = config('openapi.security.apiKeyScheme', 'API_KEY');
-        $jwt    = config('openapi.security.jwtScheme', 'JWT_BEARER_TOKEN');
+        $noApiKey      = ! empty($endpoint->metadata->custom['no_api_key']);
+        $authenticated = (bool) $endpoint->metadata->authenticated;
+        /** @var array<string> $optionalHeaders */
+        $optionalHeaders = $endpoint->metadata->custom['optional_headers'] ?? [];
 
-        if (! empty($endpoint->metadata->custom['no_api_key'])) {
+        return $this->applySecurityTo($pathItem, $noApiKey, $authenticated, $optionalHeaders);
+    }
+
+    /**
+     * Core security-injection logic — extracted for unit testability.
+     *
+     * @param  array<string, mixed>  $pathItem
+     * @param  array<string>         $optionalHeaders  lowercase header names that should be required:false
+     * @return array<string, mixed>
+     */
+    public function applySecurityTo(
+        array $pathItem,
+        bool $noApiKey,
+        bool $authenticated,
+        array $optionalHeaders = []
+    ): array {
+        $apiKey = (string) config('openapi.security.apiKeyScheme', 'API_KEY');
+        $jwt    = (string) config('openapi.security.jwtScheme', 'JWT_BEARER_TOKEN');
+
+        if ($noApiKey) {
             $pathItem['security'] = [];
-        } elseif ($endpoint->metadata->authenticated) {
+        } elseif ($authenticated) {
             $pathItem['security'] = [[$apiKey => [], $jwt => []]];
         } else {
             $pathItem['security'] = [[$apiKey => []]];
         }
 
-        if (! empty($pathItem['parameters'])) {
-            $optionalHeaders = array_map(
-                'strtolower',
-                $endpoint->metadata->custom['optional_headers'] ?? []
-            );
-
-            $pathItem['parameters'] = array_map(function (array $param) use ($optionalHeaders): array {
-                if (($param['in'] ?? '') === 'header' && ! array_key_exists('required', $param)) {
-                    $param['required'] = ! in_array(strtolower($param['name'] ?? ''), $optionalHeaders, true);
+        $rawParameters = $pathItem['parameters'] ?? null;
+        if (! empty($rawParameters) && is_array($rawParameters)) {
+            $processed = [];
+            foreach ($rawParameters as $param) {
+                if (
+                    is_array($param)
+                    && isset($param['in'])
+                    && $param['in'] === 'header'
+                    && ! array_key_exists('required', $param)
+                ) {
+                    $param['required'] = ! in_array(
+                        strtolower(isset($param['name']) ? (string) $param['name'] : ''),
+                        $optionalHeaders,
+                        true
+                    );
                 }
-                return $param;
-            }, $pathItem['parameters']);
+                $processed[] = $param;
+            }
+            $pathItem['parameters'] = $processed;
         }
 
         return $pathItem;

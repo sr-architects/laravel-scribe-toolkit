@@ -55,6 +55,10 @@ MD;
         }
 
         $jsContent = file_get_contents($jsSource);
+        if ($jsContent === false) {
+            $this->error('Failed to read jwt-generator.js');
+            return 1;
+        }
         $jsContent = str_replace('__JWT_KEY_PLACEHOLDER__', config('openapi.features.jwtKey', ''), $jsContent);
         $jsContent = str_replace('__API_KEY_PLACEHOLDER__', config('openapi.features.apiKey', ''), $jsContent);
 

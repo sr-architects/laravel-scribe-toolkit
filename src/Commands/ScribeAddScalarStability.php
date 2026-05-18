@@ -88,11 +88,12 @@ class ScribeAddScalarStability extends Command
         return self::SUCCESS;
     }
 
+    /** @return array<string, string> */
     private function buildStabilityMap(): array
     {
         $map = [];
 
-        foreach (Route::getRoutes() as $route) {
+        foreach (Route::getRoutes()->getRoutes() as $route) {
             $action = $route->getAction();
 
             if (! isset($action['controller'])) {
@@ -143,7 +144,7 @@ class ScribeAddScalarStability extends Command
 
     private function normalizePath(string $path): string
     {
-        return preg_replace('/\{[^}]+\}/', '{param}', $path);
+        return preg_replace('/\{[^}]+\}/', '{param}', $path) ?? $path;
     }
 
     private function stripRoutePrefix(string $uri): string

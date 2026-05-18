@@ -72,6 +72,7 @@ class OpenApiInjectEnvironments extends Command
         return self::SUCCESS;
     }
 
+    /** @param array<int, array<string, mixed>> $environments */
     private function injectPublisherTable(string $description, array $environments): string
     {
         $description = (string) preg_replace(

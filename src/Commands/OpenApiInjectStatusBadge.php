@@ -18,6 +18,11 @@ class OpenApiInjectStatusBadge extends Command
             return self::SUCCESS;
         }
 
-        return Artisan::call('scribe:inject-status-badge', [], $this->output);
+        return $this->runStep('scribe:inject-status-badge');
+    }
+
+    protected function runStep(string $command): int
+    {
+        return Artisan::call($command, [], $this->output);
     }
 }

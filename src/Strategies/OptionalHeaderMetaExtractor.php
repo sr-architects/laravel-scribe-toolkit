@@ -11,6 +11,10 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
  */
 class OptionalHeaderMetaExtractor extends Strategy
 {
+    /**
+     * @param  array<mixed>  $routeRules
+     * @return array<string, mixed>|null
+     */
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         $headers = OptionalHeaderExtractor::parseOptionalHeaders($endpointData);

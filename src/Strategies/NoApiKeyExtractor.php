@@ -11,9 +11,17 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
  */
 class NoApiKeyExtractor extends Strategy
 {
+    /**
+     * @param  array<mixed>  $routeRules
+     * @return array<string, mixed>|null
+     */
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
-        $docBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
+        $route = $endpointData->route;
+        if ($route === null) {
+            return null;
+        }
+        $docBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
 
         foreach ($docBlock->getTags() as $tag) {
             if (mb_strtolower($tag->getName()) === 'custom-noapikey') {

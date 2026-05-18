@@ -17,6 +17,11 @@ class OpenApiAddApidogStatus extends Command
             return self::SUCCESS;
         }
 
-        return Artisan::call('scribe:add-apidog-status', [], $this->output);
+        return $this->runStep('scribe:add-apidog-status');
+    }
+
+    protected function runStep(string $command): int
+    {
+        return Artisan::call($command, [], $this->output);
     }
 }
