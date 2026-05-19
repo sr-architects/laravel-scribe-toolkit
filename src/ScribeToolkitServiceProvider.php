@@ -28,6 +28,7 @@ class ScribeToolkitServiceProvider extends ServiceProvider
                 Commands\ScribeInjectJwtGenerator::class,
                 Commands\ScribeInjectReport::class,
                 Commands\ScribeInjectStatusBadge::class,
+                Commands\GenerateAiContext::class,
             ]);
 
             $this->publishes([

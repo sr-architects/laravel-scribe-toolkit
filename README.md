@@ -38,6 +38,7 @@ php artisan openapi:publish
 - **Per-endpoint security** — replaces Scribe's global security with precise per-operation security schemes
 - **Optional header support** — mark headers as optional via docblock without touching Scribe internals
 - **Auto-injected Scribe strategies** — no manual `config/scribe.php` wiring needed for the core plugins
+- **AI Governance as Code** — generate `CLAUDE.md` and `.cursorrules` at your project root so every AI agent on the team follows the same architectural rules
 
 ---
 
@@ -333,9 +334,87 @@ Disable individual widgets via `config/openapi.php`:
 
 ---
 
+## AI Governance as Code
+
+`openapi:generate-ai-context` writes `CLAUDE.md` and `.cursorrules` at your project root. Both files encode the architectural rules this package enforces — so every AI agent (Claude, Cursor, Copilot) generates code that is consistent with your stack automatically.
+
+```bash
+php artisan openapi:generate-ai-context
+```
+
+### What gets generated
+
+**`CLAUDE.md`** — declares the system context and rules for Claude Code and other AI CLIs:
+
+```markdown
+## System Context
+- Stack: Laravel 11+ · PHP 8.x · sr-architects/laravel-scribe-toolkit
+- Docs pipeline: php artisan openapi:publish (7 steps)
+
+## Architectural Rules
+### Input — always FormRequest
+### Output — always JsonResource
+### Business logic — Service classes only
+### OpenAPI annotations — minimal
+```
+
+**`.cursorrules`** — JSON file read by Cursor AI scoped to controller, request, and resource files:
+
+```json
+{
+  "instruction": "Never write @bodyParam or @response docblocks...",
+  "globs": ["app/Http/Controllers/**/*.php", "app/Http/Requests/**/*.php", ...]
+}
+```
+
+### Merge-safe re-runs
+
+`CLAUDE.md` uses governance markers so personal project notes are never lost:
+
+```
+<!-- ORG_RULES_START -->   ← auto-managed block (replaced on each run)
+  Architecture rules...
+<!-- ORG_RULES_END -->
+
+Your own project notes go here — they survive re-runs.
+```
+
+On subsequent runs the command replaces only the content between the markers. Content outside the markers is preserved. `.cursorrules` is left untouched unless you pass `--force`.
+
+```bash
+php artisan openapi:generate-ai-context          # safe re-run — merges rules block only
+php artisan openapi:generate-ai-context --force  # overwrites both files entirely
+```
+
+### Recommended workflow
+
+1. Run once after installing the package — commit both files to git
+2. Re-run with `--force` after a major package upgrade to pull in updated rules
+3. Add project-specific conventions **outside** the `ORG_RULES_START/END` block in `CLAUDE.md`
+
+---
+
 ## Local Development (path repository)
 
-If you are actively developing this package alongside a Laravel project, use a [path repository](https://getcomposer.org/doc/05-repositories.md#path) for instant symlink-based iteration:
+If you are developing this package and a consuming Laravel project simultaneously, use the helper scripts (if your project has them) or the path repository pattern directly.
+
+### Using the helper scripts (recommended)
+
+```bash
+# Switch to local symlink — edits to the package are reflected instantly
+bash scripts/use-local-package.sh
+
+# Revert to GitHub VCS before committing
+bash scripts/use-vcs-package.sh
+```
+
+The scripts hide dirty `composer.json` and `composer.lock` from `git status` via `git update-index --assume-unchanged` so you cannot accidentally commit local-only changes.
+
+> **Staging warning:** Never commit a `composer.lock` that contains `"type": "path"` — the symlink does not exist on staging and will cause a 500 error. Always run `use-vcs-package.sh` before committing.
+
+### Manual setup
+
+If your project does not have the helper scripts, add a path repository manually:
 
 ```jsonc
 // composer.json of your Laravel project
@@ -352,9 +431,11 @@ If you are actively developing this package alongside a Laravel project, use a [
 ]
 ```
 
-Composer will use the local symlink when the path exists (local machine) and fall back to the GitHub VCS source when it does not (Docker, CI, staging).
+```bash
+composer update sr-architects/laravel-scribe-toolkit --no-scripts
+```
 
-> **Docker note:** If your staging container cannot access the symlink target outside its mount, the VCS fallback handles it automatically — no extra volume mapping needed.
+Remove the path repository entry and re-run `composer update` before committing.
 
 ---
 
